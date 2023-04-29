@@ -1,10 +1,10 @@
-import { randomUUID } from "crypto";
 import UsersRepository from "../users-repository";
+import User from "../../entities/user";
 
 export default class InMemoryUsersRepository implements UsersRepository {
-  public items: any[] = [];
+  public items: User[] = [];
 
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = this.items.find((item) => item.email === email);
     if (!user) {
       return null;
@@ -12,17 +12,9 @@ export default class InMemoryUsersRepository implements UsersRepository {
     return user;
   }
 
-  async create(input: any): Promise<any> {
-    const user = {
-      id: randomUUID(),
-      name: input.name,
-      email: input.email,
-      password: input.passwordHash,
-      createdAt: new Date(),
-    };
-
+  async create({ name, email, password }: User): Promise<User> {
+    const user = new User(name, email, password);
     this.items.push(user);
-
     return user;
   }
 }

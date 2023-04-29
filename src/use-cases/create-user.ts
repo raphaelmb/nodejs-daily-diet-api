@@ -1,10 +1,16 @@
 import { hash } from "bcryptjs";
 import UsersRepository from "../repositories/users-repository";
+import User from "../entities/user";
+import UserAlreadyExistsError from "./errors/user-already-exists-error";
 
 interface CreateUserUseCaseRequest {
   name: string;
   email: string;
   password: string;
+}
+
+interface CreateUserUseCaseResponse {
+  user: User;
 }
 
 export default class CreateUserUseCase {
@@ -14,10 +20,10 @@ export default class CreateUserUseCase {
     name,
     email,
     password,
-  }: CreateUserUseCaseRequest): Promise<any> {
+  }: CreateUserUseCaseRequest): Promise<CreateUserUseCaseResponse> {
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
     if (userAlreadyExists) {
-      throw new userAlreadyExists();
+      throw new UserAlreadyExistsError();
     }
 
     const passwordHash = await hash(password, 6);
@@ -25,7 +31,7 @@ export default class CreateUserUseCase {
     const user = await this.usersRepository.create({
       name,
       email,
-      passwordHash,
+      password: passwordHash,
     });
 
     return { user };
