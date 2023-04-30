@@ -1,11 +1,12 @@
 import Meal from "../../entities/meal";
-import MealRepository from "../meal-repository";
+import MealsRepository from "../meals-repository";
 
-export default class InMemoryMealsRepository implements MealRepository {
+export default class InMemoryMealsRepository implements MealsRepository {
   public items: Meal[] = [];
 
   async create(input: Meal): Promise<Meal> {
     const meal = new Meal(
+      input.userId,
       input.name,
       input.description,
       input.dateAndTime,
@@ -15,8 +16,9 @@ export default class InMemoryMealsRepository implements MealRepository {
     return meal;
   }
 
-  delete(id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: string): Promise<void> {
+    const foundIndex = this.items.findIndex((item) => item.id === id);
+    this.items.splice(foundIndex, 1);
   }
 
   async getAll(): Promise<Meal[]> {
@@ -31,7 +33,8 @@ export default class InMemoryMealsRepository implements MealRepository {
     return meal;
   }
 
-  update(id: string, input: Meal): Promise<void> {
-    throw new Error("Method not implemented.");
+  async update(input: Meal): Promise<void> {
+    const foundIndex = this.items.findIndex((item) => item.id === input.id);
+    this.items[foundIndex] = input;
   }
 }
