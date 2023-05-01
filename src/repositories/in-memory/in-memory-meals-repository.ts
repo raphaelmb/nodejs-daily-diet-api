@@ -21,8 +21,8 @@ export default class InMemoryMealsRepository implements MealsRepository {
     this.items.splice(foundIndex, 1);
   }
 
-  async getAll(): Promise<Meal[]> {
-    return this.items;
+  async getAll(userId: string): Promise<Meal[]> {
+    return this.items.filter((item) => item.userId === userId);
   }
 
   async getOne(id: string): Promise<Meal | null> {

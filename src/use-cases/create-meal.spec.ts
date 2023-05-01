@@ -19,7 +19,6 @@ describe("Create Meal use case", () => {
       dateAndTime: new Date(),
       isInDiet: true,
     });
-    console.log(meal);
     expect(meal.id).toBeDefined();
   });
 });
