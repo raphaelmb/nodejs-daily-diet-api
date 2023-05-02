@@ -5,8 +5,10 @@ import MealNotFoundError from "./errors/meal-not-found-error";
 import GetOneMealUseCase from "./get-one-meal";
 import UpdateMealUseCase from "./update-meal";
 import Meal from "../entities/meal";
+import InMemoryUsersRepository from "../repositories/in-memory/in-memory-users-repository";
 
 let mealsRepository: InMemoryMealsRepository;
+let usersRepository: InMemoryUsersRepository;
 let createMealUseCase: CreateMealUseCase;
 let getOneMealUseCase: GetOneMealUseCase;
 let sut: UpdateMealUseCase;
@@ -14,14 +16,21 @@ let sut: UpdateMealUseCase;
 describe("Update Meal Use Case", () => {
   beforeEach(() => {
     mealsRepository = new InMemoryMealsRepository();
-    createMealUseCase = new CreateMealUseCase(mealsRepository);
+    usersRepository = new InMemoryUsersRepository();
+    createMealUseCase = new CreateMealUseCase(mealsRepository, usersRepository);
     getOneMealUseCase = new GetOneMealUseCase(mealsRepository);
     sut = new UpdateMealUseCase(mealsRepository);
   });
 
   it("should update one meal with a given id", async () => {
+    const user = await usersRepository.create({
+      name: "John Doe",
+      email: "johndoe@example.com",
+      password: "12345",
+    });
+
     const { meal: createdMeal } = await createMealUseCase.execute({
-      userId: "1",
+      userId: user.id!,
       name: "meal 1",
       description: "description 1",
       dateAndTime: new Date(),
@@ -29,7 +38,7 @@ describe("Update Meal Use Case", () => {
     });
 
     const updatedMeal = new Meal(
-      "1",
+      user.id!,
       "meal updated",
       "new description",
       createdMeal.dateAndTime,
@@ -41,7 +50,7 @@ describe("Update Meal Use Case", () => {
 
     const { meal } = await getOneMealUseCase.execute({ id: createdMeal.id! });
     expect(meal.id).toEqual(createdMeal.id);
-    expect(meal.userId).toEqual("1");
+    expect(meal.userId).toEqual(user.id);
     expect(meal.name).toEqual("meal updated");
   });
 

@@ -15,24 +15,22 @@ export default class User {
     this.id = id ?? randomUUID();
   }
 
-  addTotalMealsRegistered() {
+  updateUsersMealStats(mealInDiet: boolean) {
     this.totalMealsRegistered++;
+    if (mealInDiet) {
+      this.totalMealsInDiet++;
+    } else {
+      this.totalMealsOutOfDiet =
+        this.totalMealsRegistered - this.totalMealsInDiet;
+    }
   }
 
   getTotalMealsRegistered() {
     return this.totalMealsRegistered;
   }
 
-  addTotalMealsInDiet() {
-    this.totalMealsInDiet++;
-  }
-
   getTotalMealsInDiet() {
     return this.totalMealsInDiet;
-  }
-
-  addTotalMealsOutOfDiet() {
-    this.totalMealsOutOfDiet++;
   }
 
   getTotalMealsOutOfDiet() {

@@ -19,7 +19,7 @@ export default class UpdateMealUseCase {
       foundMeal.userId,
       meal.name,
       meal.description,
-      foundMeal.dateAndTime,
+      meal.dateAndTime,
       meal.isInDiet,
       foundMeal.id
     );

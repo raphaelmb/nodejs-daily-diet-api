@@ -1,5 +1,6 @@
 import Meal from "../entities/meal";
 import MealsRepository from "../repositories/meals-repository";
+import UsersRepository from "../repositories/users-repository";
 
 interface CreateMealUseCaseRequest {
   userId: string;
@@ -14,7 +15,10 @@ interface CreateMealUseCaseResponse {
 }
 
 export default class CreateMealUseCase {
-  constructor(readonly mealsRepository: MealsRepository) {}
+  constructor(
+    readonly mealsRepository: MealsRepository,
+    readonly usersRepository: UsersRepository
+  ) {}
 
   async execute({
     userId,
@@ -30,6 +34,12 @@ export default class CreateMealUseCase {
       dateAndTime,
       isInDiet,
     });
+
+    const user = await this.usersRepository.findById(userId);
+
+    user.updateUsersMealStats(meal.isInDiet);
+
+    await this.usersRepository.updateStats(user);
 
     return { meal };
   }
